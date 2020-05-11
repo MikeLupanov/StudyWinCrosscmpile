@@ -10,11 +10,11 @@ LDFLAGS=-static-libgcc -static-libstdc++ -ladvapi32
 
 SOURCES=hash.cpp
 EXECUTABLE=hash.exe
-##SHAREDIR=~/shared/exec/
+SHAREDIR=~/shared/exec/
 
 ## copy to Windows share folder
-##$(SHAREDIR)$(EXECUTABLE): $(EXECUTABLE)
-##	cp -f $(EXECUTABLE) $(SHAREDIR)
+$(SHAREDIR)$(EXECUTABLE): $(EXECUTABLE)
+	cp -f $(EXECUTABLE) $(SHAREDIR)
 
 ## buld exe
 $(EXECUTABLE): $(SOURCES)
