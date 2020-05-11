@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 #include <windows.h>
 
@@ -24,20 +25,8 @@ int main()
         FileHash fh("hash.exe");
         std::cout<<fh.calcHash()<<std::endl;
     }
-    catch (int e) {
-        std::cerr<<e<<std::endl;
-        if (e == 1)
-            std::cerr<<"Error open file\n";
-        else if (e == 2)
-            std::cerr<<"Error open crypto context: ";
-        else if (e == 3)
-            std::cerr<<"Error create hash: ";
-        else if (e == 4)
-            std::cerr<<"Error eval hash data: ";
-        else if (e == 5)
-            std::cerr<<"Error get hash value: ";
-        if (e != 1)
-            std::cerr<<std::hex<<GetLastError()<<std::endl;
+    catch (std::runtime_error& e) {
+        std::cerr<<std::hex<<GetLastError()<<std::endl;
         std::terminate();
     }
     return 0;
@@ -47,11 +36,11 @@ int main()
 FileHash::FileHash(const char* fname): f(fname, std::ios::binary), buf(new BYTE[BUF_SIZE])
 {
     if (!f.good())      //file open?
-        throw 1;
+        throw std::runtime_error("Can\'t open file");
     if ( !CryptAcquireContext(&hCryptProv, nullptr, nullptr, PROV_DSS, 0))  //crypto context open?
-        throw 2;
+        throw std::runtime_error("Can\'t acquire cryptocontext");
     if( !CryptCreateHash(hCryptProv, CALG_MD5, 0, 0, &hHash))               //hash handle created?
-        throw 3;
+        throw std::runtime_error("Can\'t create hash");
 }
 
 FileHash::~FileHash()
@@ -71,13 +60,13 @@ std::string FileHash::calcHash()
         f.read( (char*)buf, BUF_SIZE);              //read data portion from file
         len = f.gcount();
         if (!CryptHashData( hHash, buf, len, 0))    //calc hash for data portion
-            throw 4;
+            throw std::runtime_error("Can\'n calc hash");
     }
 
 //get hash
     len = BUF_SIZE;
     if (!CryptGetHashParam(hHash, HP_HASHVAL, buf, &len, 0))
-        throw 5;
+        throw std::runtime_error("Can\' get hash data");
 
 //convert hash to string
     std::string HashStr;
