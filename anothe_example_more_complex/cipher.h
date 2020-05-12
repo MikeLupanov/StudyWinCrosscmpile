@@ -35,8 +35,8 @@ public:
 class FileCipher:public Cipher {
 public:
     FileCipher()=delete;
-    FileCipher(const std::string password, CipherAlg alg = _3DES):Cipher(password, alg){}
-    ~FileCipher(){}
+    FileCipher(const std::string password, CipherAlg alg = _3DES):Cipher(password, alg) {}
+    ~FileCipher() {}
     void encrypt(const std::string& source_file, const std::string& destination_file);
     void decrypt(const std::string& source_file, const std::string& destination_file);
 };

@@ -17,7 +17,7 @@ protected:
         std::pair<int,const wchar_t*>(SHA256,BCRYPT_SHA256_ALGORITHM),
         std::pair<int,const wchar_t*>(SHA384,BCRYPT_SHA384_ALGORITHM),
         std::pair<int,const wchar_t*>(SHA512,BCRYPT_SHA512_ALGORITHM)
-    };    
+    };
     static constexpr int BUF_SIZE = 1024*4;
     unsigned char * buf;
     ULONG len;
@@ -27,7 +27,7 @@ protected:
     virtual void calcHash(const std::string data)=0;
     void finishHash();
     std::string toString();
-    
+
 public:
     Hash(HashAlg alg = MD5);
     virtual ~Hash();

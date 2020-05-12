@@ -4,9 +4,9 @@ CXX=x86_64-w64-mingw32-g++-win32
 OFLAGS=-O3 -Wall -DNDEBUG
 LDFLAGS= -static-libgcc -static-libstdc++  -lbcrypt  
 
-SOURCES=hash.cpp main.cpp
-HEADERS=hash.h
-EXECUTABLE=hash.exe
+SOURCES=hash.cpp cipher.cpp main.cpp
+HEADERS=hash.h cipher.h
+EXECUTABLE=crypt.exe
 SHAREDIR=~/shared/exec/
 
 

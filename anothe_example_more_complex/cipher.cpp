@@ -29,7 +29,7 @@ Cipher::Cipher(const std::string password, CipherAlg alg)
     status = BCryptGetProperty(hAlg, BCRYPT_BLOCK_LENGTH, (PBYTE)&BlockLen, sizeof(DWORD), &len, 0);
     if (status != 0)
         throw std::system_error(status, std::system_category(), "Error get block length");
-    
+
     // set CBC mode
     status = BCryptSetProperty(hAlg, BCRYPT_CHAINING_MODE, (PBYTE)BCRYPT_CHAIN_MODE_CBC, sizeof(BCRYPT_CHAIN_MODE_CBC), 0);
     if (status != 0)
@@ -83,7 +83,7 @@ void FileCipher::encrypt(const std::string& source_file, const std::string& dest
     destination.exceptions(std::ifstream::goodbit );
 
     // init IV by random
-    IV = new BYTE[BlockLen]{};
+    IV = new BYTE[BlockLen] {};
     BCRYPT_ALG_HANDLE hRnd;
     status = BCryptOpenAlgorithmProvider(&hRnd, BCRYPT_RNG_ALGORITHM, nullptr, 0);
     if (status != 0)  //Open provider?
@@ -94,7 +94,7 @@ void FileCipher::encrypt(const std::string& source_file, const std::string& dest
     BCryptCloseAlgorithmProvider(hRnd,0);
     // write IV
     destination.write((char*)IV, BlockLen);
- 
+
     //encrypt
     ULONG len,pad;
     const ULONG in_buf_size = BlockLen*NUM_BLOCKS;
@@ -103,7 +103,7 @@ void FileCipher::encrypt(const std::string& source_file, const std::string& dest
     PBYTE out_buf = new BYTE[out_buf_size];
     while (source) {
         //read data portion from file
-        source.read( (char*)in_buf, in_buf_size);             
+        source.read( (char*)in_buf, in_buf_size);
         len = source.gcount();
         if (len == 0)
             break;
@@ -111,7 +111,7 @@ void FileCipher::encrypt(const std::string& source_file, const std::string& dest
             pad = BCRYPT_BLOCK_PADDING;
         else
             pad = 0;
-        //encrypt data portion 
+        //encrypt data portion
         status = BCryptEncrypt(hKey, in_buf, len, NULL,IV, BlockLen, out_buf, out_buf_size, &len, pad );
         if (status != 0)
             throw std::system_error(status, std::system_category(),"block not encrypted");
@@ -131,11 +131,11 @@ void FileCipher::decrypt(const std::string& source_file, const std::string& dest
     destination.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     destination.open(destination_file, std::ios::binary | std::ios::out);
     destination.exceptions(std::ifstream::goodbit );
-    
+
     // read IV from random
-    IV = new BYTE[BlockLen]{};
+    IV = new BYTE[BlockLen] {};
     source.read((char*)IV, BlockLen);
- 
+
     //decrypt
     ULONG len,pad;
     const ULONG in_buf_size = BlockLen*NUM_BLOCKS;
@@ -144,7 +144,7 @@ void FileCipher::decrypt(const std::string& source_file, const std::string& dest
     PBYTE out_buf = new BYTE[out_buf_size];
     while (source) {
         //read data portion from file
-        source.read( (char*)in_buf, in_buf_size);             
+        source.read( (char*)in_buf, in_buf_size);
         len = source.gcount();
         if (len == 0)
             break;
