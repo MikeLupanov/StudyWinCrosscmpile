@@ -24,14 +24,12 @@ Cipher::Cipher(const std::string password, CipherAlg alg)
     if (status != 0)
         throw std::system_error(status, std::system_category(), "Error get key object length");
     KeyObj = new BYTE[KeyObjLen];
-    std::cout<<KeyObjLen<<std::endl;
 
     // get algorithm block len
     status = BCryptGetProperty(hAlg, BCRYPT_BLOCK_LENGTH, (PBYTE)&BlockLen, sizeof(DWORD), &len, 0);
     if (status != 0)
         throw std::system_error(status, std::system_category(), "Error get block length");
-    std::cout<<BlockLen<<std::endl;
-
+    
     // set CBC mode
     status = BCryptSetProperty(hAlg, BCRYPT_CHAINING_MODE, (PBYTE)BCRYPT_CHAIN_MODE_CBC, sizeof(BCRYPT_CHAIN_MODE_CBC), 0);
     if (status != 0)
