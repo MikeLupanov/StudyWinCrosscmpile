@@ -2,9 +2,9 @@
 #include <cwchar>
 #include "hash.h"
 
-//////////////////////// StringHash ////////////////////////////////////////////
+//////////////////////// Hash //////////////////////////////////////////////////
 
-StringHash::StringHash(HashAlg alg): buf(new unsigned char[BUF_SIZE])
+Hash::Hash(HashAlg alg): buf(new unsigned char[BUF_SIZE])
 {
     status = BCryptOpenAlgorithmProvider(&hAlgorithm, AlgList[alg], nullptr, 0);
     if (status != 0)  //Open provider?
@@ -14,14 +14,14 @@ StringHash::StringHash(HashAlg alg): buf(new unsigned char[BUF_SIZE])
         throw std::system_error(status, std::system_category(), "Error create hash object");
 }
 
-StringHash::~StringHash()
+Hash::~Hash()
 {
     delete[] buf;
     BCryptDestroyHash(hHash);            //destroy hash handle
     BCryptCloseAlgorithmProvider(hAlgorithm,0);  //close provider
 }
 
-std::string StringHash::name()
+std::string Hash::name()
 {
     wchar_t * p = (wchar_t*)buf;
     std::string res;
@@ -34,7 +34,7 @@ std::string StringHash::name()
     return res;
 }
 
-void StringHash::finishHash()
+void Hash::finishHash()
 {
 //get hash length
     status = BCryptGetProperty(hAlgorithm, BCRYPT_HASH_LENGTH, buf, BUF_SIZE, &len, 0);
@@ -47,7 +47,7 @@ void StringHash::finishHash()
         throw  std::system_error(status, std::system_category(), "Error get hash value");
 }
 
-std::string StringHash::toString()
+std::string Hash::toString()
 {
     const char HEX_DIG[16] = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
 //convert hash to string
@@ -60,6 +60,14 @@ std::string StringHash::toString()
 
 }
 
+std::string  Hash::operator()(const std::string data)
+{
+    calcHash(data);
+    finishHash();
+    return toString();
+}
+//////////////////////// StringHash ////////////////////////////////////////////
+
 void StringHash::calcHash(const std::string data)
 {
 //calc hash of
@@ -68,18 +76,12 @@ void StringHash::calcHash(const std::string data)
         throw  std::system_error(status, std::system_category(), "Error evaluate hash data");
 }
 
-std::string  StringHash::operator()(const std::string data)
-{
-    calcHash(data);
-    finishHash();
-    return toString();
-}
-
 //////////////////////// FileHash ////////////////////////////////////////////
 
 void FileHash::calcHash(const std::string data)
 {
 //open file
+    std::ifstream f;
     f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     f.open(data, std::ios::binary);
     f.exceptions(std::ifstream::goodbit );
