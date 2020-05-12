@@ -29,7 +29,6 @@ protected:
     std::string toString();
     
 public:
-    Hash()=delete;
     Hash(HashAlg alg = MD5);
     virtual ~Hash();
     std::string operator()(const std::string data);
@@ -40,7 +39,6 @@ class StringHash:public Hash {
 private:
     virtual void calcHash(const std::string data);
 public:
-    StringHash()=delete;
     StringHash(HashAlg alg = MD5):Hash(alg) {}
     virtual ~StringHash() {}
 };
@@ -49,7 +47,6 @@ class FileHash:public Hash {
 private:
     virtual void calcHash(const std::string data);
 public:
-    FileHash()=delete;
     FileHash(HashAlg alg = MD5):Hash(alg) {}
     virtual ~FileHash() {}
 };
